@@ -123,7 +123,9 @@ void getJSON(){
   message += ", \"gardner_name\": ";
   message += "\"" + gardner_name + "\"";  
   message += ", \"title\": ";
-  message += "\"" + gardner_name + "\"";                 
+  message += "\"" + gardner_name + "\"";  
+  message += ", \"version\": ";
+  message += "\"" + String(VERSION_SHORT) + "\"";               
   message += "}";
   server.send(200, F("application/json"), message);
 }

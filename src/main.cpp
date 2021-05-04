@@ -16,7 +16,6 @@
 #include <EEPROM.h>
 #include "FS.h"
 
-
 #define bi1               D1                                    // water tank low lvl
 #define bi3               D2                                    // push button 
 #define bo1               D3                                    // water pump 1

@@ -161,6 +161,7 @@ const char HTTP_TELEGRAM[] PROGMEM = R"=====(
             <div class="grid-container full">
                 <small><b>SQ9MDD @ 2021</b><br>
                     Edward Ogrodnik ESP8266 rozwiązanie dla roślin.
+                    <br><b id="version">wait...</b>
                 </small>
             </div>
         </section>  

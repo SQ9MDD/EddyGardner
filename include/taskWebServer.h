@@ -14,6 +14,7 @@
 #include <settings_wifi.h>
 #include <settings.h>
 #include <EEPROM.h>
+#include <version.h>
 
 #define AP_SSID "Ed's Gardner AP"
 #define AP_PASS "niceflowers"
