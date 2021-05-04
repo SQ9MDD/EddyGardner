@@ -3,19 +3,20 @@ const char HTTP_SETTINGS[] PROGMEM = R"=====(
 <html lang="pl" style="height:100;">
     <head>
      <meta charset="UTF-8">
-        <style>
-            body { font-size: 1.2rem; line-height: 1.6; font-weight: 300;font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif; color: rgb(96, 60, 97); background-color: white;}
-            .container {position: relative; margin: 0 auto;}
-            .grid-container {position: relative;max-width: var(--grid-max-width);margin: 0 auto;padding: 10px;text-align: center;display: grid; grid-gap: 10px;gap: 10px;}
-            .grid-container.quarters { grid-template-columns: repeat(4, 1fr); border-radius: 4px;}
-            .grid-container.half { grid-template-columns: repeat(2, 1fr); border-radius: 4px;}
-            section { border-radius: 8px; border: 2px solid rgb(22, 22, 22); margin-top: 5px; padding: 5px; max-width: 1024px; }
-            .input {border-radius: 8px; border: 2px solid gray; width: 200px; height: 30px; font-size: 1.2rem; font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif; color: rgb(96, 60, 97); background-color: white;}
-            .input_long {border-radius: 8px; border: 2px solid gray; width: 450px; height: 30px; font-size: 1.2rem; font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif; color: rgb(96, 60, 97); background-color: white;}
-            .input_short {border-radius: 8px; border: 2px solid gray; width: 37px; height: 30px; font-size: 1.2rem; font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif; color: rgb(96, 60, 97); background-color: white;}
-            .box {border-radius: 8px; width: 32px; height: 32px; border: 2px solid; color: rgb(96, 60, 97);}
-            .submit_btn {border-radius: 8px; border: 2px solid gray; width: 980px; height: 30px; font-size: 1.2rem; font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif; color: white; background-color: rgb(96, 60, 97);}
-        </style>
+     <style>
+        body { font-size: 1.2rem; line-height: 1.6; font-weight: 300;font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif; color: rgb(96, 60, 97); background-color: white;}
+        small {font-size: 0.7rem; }
+        .container {position: relative; margin: 0 auto;}
+        .grid-container {position: relative;max-width: var(--grid-max-width);margin: 0 auto;padding: 10px;text-align: center;display: grid; grid-gap: 10px;gap: 10px;}
+        .grid-container.quarters { grid-template-columns: repeat(4, 1fr); border-radius: 4px;}
+        .grid-container.half { grid-template-columns: repeat(2, 1fr); border-radius: 4px;}
+        section { border-radius: 8px; border: 2px solid rgb(22, 22, 22); margin-top: 5px; padding: 5px; max-width: 1024px; }
+        .input {border-radius: 8px; border: 2px solid gray; width: 200px; height: 30px; font-size: 1.2rem; font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif; color: rgb(96, 60, 97); background-color: white;}
+        .input_long {border-radius: 8px; border: 2px solid gray; width: 450px; height: 30px; font-size: 1.2rem; font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif; color: rgb(96, 60, 97); background-color: white;}
+        .input_short {border-radius: 8px; border: 2px solid gray; width: 37px; height: 30px; font-size: 1.2rem; font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif; color: rgb(96, 60, 97); background-color: white;}
+        .box {border-radius: 8px; width: 32px; height: 32px; border: 2px solid; color: rgb(96, 60, 97);}
+        .submit_btn {border-radius: 8px; border: 2px solid gray; width: 980px; height: 30px; font-size: 1.2rem; font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif; color: white; background-color: rgb(96, 60, 97);}
+    </style>
         <script type="text/javascript">
 
             window.onload = function (){
