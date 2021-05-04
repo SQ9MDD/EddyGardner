@@ -47,14 +47,16 @@ void getJSON(){
   water_percent = constrain(water_percent,0,100);
   String job_status;
   if(low_lvl == false){
-    if(moisture < moisture_low_limit){
+    if(moisture <= moisture_low_limit){
       job_status = "\"<font color=red> Błąd umieszczenia czujnika wilgotności, praca niemożliwa. </font>\"";
     }else if(moisture > moisture_low_limit && moisture < moisture_set){
       job_status = "\"<font color=green> Normalna praca, niska wilgotność, tryb podlewania.</font>\"";
-    }else if(moisture >moisture_set && moisture < moisture_hi_limit){
+    }else if(moisture >= moisture_set && moisture < moisture_hi_limit){
       job_status = "\"<font color=green> Normalna praca, wilgotność w normie, oczekiwanie.</font>\"";
-    }else if(moisture > moisture_hi_limit){
-      job_status = "\"<font color=green> Normalna praca, wilgotność powyżej normy, oczekiwanie.</font>\"";
+    }else if(moisture >= moisture_set && moisture >= moisture_hi_limit){
+      job_status = "\"<font color=blue> Normalna praca, wilgotność powyżej normy, oczekiwanie.</font>\"";
+    }else{
+      job_status = "\"<font color=orange> Analizuję sytuację...</font>\"";
     }
   }else{
     job_status = "\"<font color=red> Brak wody w zbiorniku, praca niemożliwa. </font>\"";
