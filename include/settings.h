@@ -105,6 +105,7 @@ const char HTTP_SETTINGS[] PROGMEM = R"=====(
                             </a>
                         </td>                                                                                                                        
                         <td>&nbsp;</td>
+                        <td width=300><h2> <b id="title">wait...</b><b></b></h2></td
                     </tr>
                 </table>
             </div>

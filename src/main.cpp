@@ -26,7 +26,7 @@
 OneWire oneWire(ai2);
 DallasTemperature sensors(&oneWire);
 
-String gardner_name = "Ogrodnik 3";
+String gardner_name = "Eddy Gardner";
 String wifi_config_file = "/wifi_conf.txt";
 String config_file = "/config.txt";
 String wifi_ssid = "";
@@ -124,7 +124,7 @@ void BO_RESET() {
   bo_state = false;
   digitalWrite(bo1, HIGH);
   if(domoti_on){
-    send_domoticz(3, 1.0, idx_water_pump);
+    send_domoticz(3, 0.0, idx_water_pump);
   }  
   delay(100);
 }

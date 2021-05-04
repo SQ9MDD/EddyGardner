@@ -119,7 +119,9 @@ void getJSON(){
   message += ", \"wifi_ssid\": ";
   message += "\"" + wifi_ssid + "\""; 
   message += ", \"gardner_name\": ";
-  message += "\"" + gardner_name + "\"";                
+  message += "\"" + gardner_name + "\"";  
+  message += ", \"title\": ";
+  message += "\"" + gardner_name + "\"";                 
   message += "}";
   server.send(200, F("application/json"), message);
 }
