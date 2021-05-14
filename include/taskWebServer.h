@@ -15,6 +15,7 @@
 #include <settings.h>
 #include <EEPROM.h>
 #include <version.h>
+#include <LittleFS.h>
 
 #define AP_SSID "Ed's Gardner AP"
 #define AP_PASS "niceflowers"

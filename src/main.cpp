@@ -14,7 +14,7 @@
 #include <DallasTemperature.h>                                  // biblioteka do komunikacji z czujnikami DS18B20
 #include <OneWire.h>                                            // biblioteka do komunikacji z czujnikami one wire
 #include <EEPROM.h>
-#include "FS.h"
+#include <LittleFS.h>
 
 #define bi1               D1                                    // water tank low lvl
 #define bi3               D2                                    // push button 
@@ -86,9 +86,10 @@ void send_domoticz(int type_sensor, float value_sensor, int idx){
       url += "?type=command&param=switchlight&idx=" + String(idx) + "&switchcmd=Off";
     }
   }
+  WiFiClient client;
   HTTPClient http;
-  http.begin(url.c_str());
-  int ResponseCode = http.GET();
+  http.begin(client,url);
+  http.GET();
   // dopisac obslugę błędów
   http.end();
   Serial.println(url);
@@ -100,7 +101,7 @@ void send_telegram(String txt_msg){
   client->setInsecure();
   HTTPClient https;
   if (https.begin(*client, url)) {  // HTTPS
-    int httpCode = https.GET();
+    https.GET();
   }  
   Serial.println(url);  
 }
@@ -111,6 +112,7 @@ void BO_SET(){
     bo1_start_time = millis(); 
     delay(100);
     digitalWrite(bo1, LOW);
+    water_lvl = water_lvl - impulse_ml;
     if(domoti_on){
       send_domoticz(3, 1.0, idx_water_pump);
     }
@@ -129,14 +131,12 @@ void BO_RESET() {
 }
 
 void read_global(){
-  if (SPIFFS.begin()){
-      //Serial.println("SPIFFS Active");
-      //Serial.println();
+  if (LittleFS.begin()){
       spiffsActive = true;
   } else {
       Serial.println("Unable to activate SPIFFS");
   }
-  File file = SPIFFS.open(config_file,"r");
+  File file = LittleFS.open(config_file,"r");
   if(!file){
     Serial.println("error opening file");
   }else{
@@ -145,7 +145,6 @@ void read_global(){
     while (file.position()<file.size()){
       s = file.readStringUntil('\n');
       s.trim();
-      //Serial.println(s);
       if(line == 0){  //bot api
         gardner_name = s.c_str();
       }  
@@ -156,14 +155,12 @@ void read_global(){
 }
 
 void read_wifi_spiffs(){
-  if (SPIFFS.begin()){
-      //Serial.println("SPIFFS Active");
-      //Serial.println();
+  if (LittleFS.begin()){
       spiffsActive = true;
   } else {
       Serial.println("Unable to activate SPIFFS");
   }
-  File file = SPIFFS.open(wifi_config_file,"r");
+  File file = LittleFS.open(wifi_config_file,"r");
   if(!file){
     Serial.println("error opening file");
   }
@@ -172,7 +169,6 @@ void read_wifi_spiffs(){
     while (file.position()<file.size()){
       s = file.readStringUntil('\n');
       s.trim();
-      //Serial.println(s);
       if(line == 0){  //bot api
         wifi_ssid = s.c_str();
       }
@@ -185,14 +181,12 @@ void read_wifi_spiffs(){
 }
 
 void read_telegram_spiffs(){
-  if (SPIFFS.begin()){
-      //Serial.println("SPIFFS Active");
-      //Serial.println();
+  if (LittleFS.begin()){
       spiffsActive = true;
   } else {
       Serial.println("Unable to activate SPIFFS");
   }
-  File file = SPIFFS.open(telegram_config_file,"r");
+  File file = LittleFS.open(telegram_config_file,"r");
   if(!file){
     Serial.println("error opening file");
   }
@@ -201,7 +195,6 @@ void read_telegram_spiffs(){
     while (file.position()<file.size()){
       s = file.readStringUntil('\n');
       s.trim();
-      //Serial.println(s);
       if(line == 0){  //bot api
         telegram_bot_api_key = s.c_str();
       }
@@ -262,7 +255,6 @@ void setup() {
   domoticz_interval = (send_interval * 60 * 1000);
 
   sensors.requestTemperatures();
-  //int16_t conversionTime = sensors.millisToWaitForConversion(sensors.getResolution());
   temperature = sensors.getTempCByIndex(0);
 
   Serial.println("booting...");
@@ -294,12 +286,10 @@ void loop() {
   // wylaczenie pompki po przepompowaniu dawki
   if(bo_state == true && (millis() - bo1_start_time) >= (impulse_time * impulse_ml)){
     BO_RESET();
-    //Serial.println("pompa stop...");
-    water_lvl = water_lvl - impulse_ml;
   }
 
   // test plywaka dolnego wykrywanie braku wody ustawia zmienną water_lvl na 0%
-  // zwarcie na pływaku ustawia zmienną water_lvl na 100% (napełnienie zbiornika)
+  // zwarcie na pływaku jednorazowo ustawia zmienną water_lvl na 100% (napełnienie zbiornika)
   if(digitalRead(bi1) != low_lvl){
     delay(50);
     if(digitalRead(bi1) != low_lvl){
@@ -332,11 +322,10 @@ void loop() {
     if(tmp_mesure > -15.0){ // podczas pracy pompy pojawiają się anomalie odczytów wiec pomijam błędne pomiary
       temperature = (((temperature * 9 ) + tmp_mesure) / 10); // wygładzanie odczytów
     }
-    Serial.println(millis());
     last_tick = millis();
 
     if(water_lvl < telegram_low_lvl_val.toInt() && telegram_alarm_sent == false && telegram_active){
-      send_telegram(telegram_low_lvl_txt + " ALARM");
+      send_telegram(telegram_low_lvl_txt + " ALARM"); // <-------------- dodac nazwe systemu w alarmie
       telegram_alarm_sent = true;
       telegram_dealarm_sent = false;
     }
@@ -356,6 +345,9 @@ void loop() {
       }
       last_telegram_active = telegram_active;  
     }
+    // debug
+    int water_percent = map(water_lvl,0,water_lvl_max,0,100);
+    Serial.println(String(millis()) + ";" + String(water_lvl) + ";" + String(water_lvl_max) + ";" + String(water_percent));
   }
 
   // domoticz integration

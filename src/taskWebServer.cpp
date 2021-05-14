@@ -132,13 +132,13 @@ void getJSON(){
 
 void save_settings(){
   gardner_name = server.arg("gardner_name");
-  if (SPIFFS.begin()){
+  if (LittleFS.begin()){
       spiffsActive = true;
   } else {
       Serial.println("Unable to activate SPIFFS");
   }  
-  File file = SPIFFS.open(config_file,"w");  
-  int bytesWritten = file.print(gardner_name + "\n");
+  File file = LittleFS.open(config_file,"w");  
+  file.print(gardner_name + "\n");
   file.close();  
   delay(2000);
   server.send(200, F("text/html"), "<html><head><meta http-equiv=\"refresh\" content=\"1; url=/settings\"></head><body><center><br><br><br><b>OK</body></html>");
@@ -147,16 +147,14 @@ void save_settings(){
 void save_wifi(){
   wifi_ssid = server.arg("wifi_ssid");
   wifi_pass = server.arg("wifi_pass");
-  if (SPIFFS.begin()){
-      //Serial.println("SPIFFS Active");
-      //Serial.println();
+  if (LittleFS.begin()){
       spiffsActive = true;
   } else {
       Serial.println("Unable to activate SPIFFS");
   }  
-  File file = SPIFFS.open(wifi_config_file,"w"); 
+  File file = LittleFS.open(wifi_config_file,"w"); 
   if(wifi_pass != ""){
-    int bytesWritten = file.print(wifi_ssid + "\n" + wifi_pass + "\n");
+    file.print(wifi_ssid + "\n" + wifi_pass + "\n");
     file.close();
     server.send(200, F("text/html"), "<html><head><meta http-equiv=\"refresh\" content=\"1; url=/set_wifi\"></head><body><center><br><br><br><b>OK RESTARTING</body></html>");
     delay(2000);
@@ -174,15 +172,13 @@ void save_telegram_spiffs(){
   telegram_low_lvl_val = server.arg("telegram_low_lvl_val");
   telegram_active = server.arg("telegram_active").toInt();
   Serial.print(telegram_active);
-  if (SPIFFS.begin()){
-      //Serial.println("SPIFFS Active");
-      //Serial.println();
+  if (LittleFS.begin()){
       spiffsActive = true;
   } else {
       Serial.println("Unable to activate SPIFFS");
   }  
-  File file = SPIFFS.open(telegram_config_file,"w");
-  int bytesWritten = file.print(telegram_bot_api_key + "\n" + telegram_chat_id + "\n" + telegram_low_lvl_txt + "\n" + telegram_low_lvl_val  + "\n" + String(telegram_active) + "\n");
+  File file = LittleFS.open(telegram_config_file,"w");
+  file.print(telegram_bot_api_key + "\n" + telegram_chat_id + "\n" + telegram_low_lvl_txt + "\n" + telegram_low_lvl_val  + "\n" + String(telegram_active) + "\n");
   file.close();
   delay(2000);
   server.send(200, F("text/html"), "<html><head><meta http-equiv=\"refresh\" content=\"1; url=/set_telegram\"></head><body><center><br><br><br><b>OK</body></html>");
