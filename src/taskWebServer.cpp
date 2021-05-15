@@ -43,7 +43,7 @@ extern int idx_water_tank;
 extern int idx_water_pump;
 
 void getJSON(){
-  int water_percent = map(water_lvl,0,water_lvl_max,0,100);
+  long water_percent = map(water_lvl, 0, water_lvl_max, 0, 100);
   water_percent = constrain(water_percent,0,100);
   String job_status;
   if(low_lvl == false){
@@ -162,7 +162,6 @@ void save_wifi(){
   }else{
     server.send(200, F("text/html"), "<html><head><meta http-equiv=\"refresh\" content=\"1; url=/set_wifi\"></head><body><center><br><br><br><b>EMPTY PASSWORD</body></html>"); 
   }
-
 }
 
 void save_telegram_spiffs(){
@@ -229,7 +228,6 @@ void save_domoticz(){
   EEPROM.write(14,idx_water_tank);
   EEPROM.write(15,idx_water_pump);
   EEPROM.write(16,0xFE);
-
   EEPROM.commit();
   EEPROM.end();
   server.send(200, F("text/html"), "<html><head><meta http-equiv=\"refresh\" content=\"1; url=/set_domo\"></head><body><center><br><br><br><b>OK</body></html>");

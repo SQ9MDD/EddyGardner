@@ -279,7 +279,7 @@ void setup() {
 
 }
 
-void loop() {
+void loop(){
   ArduinoOTA.handle();
   server.handleClient();
 
@@ -325,12 +325,12 @@ void loop() {
     last_tick = millis();
 
     if(water_lvl < telegram_low_lvl_val.toInt() && telegram_alarm_sent == false && telegram_active){
-      send_telegram(telegram_low_lvl_txt + " ALARM"); // <-------------- dodac nazwe systemu w alarmie
+      send_telegram(gardner_name + ": " + telegram_low_lvl_txt + " ALARM"); // <-------------- dodac nazwe systemu w alarmie
       telegram_alarm_sent = true;
       telegram_dealarm_sent = false;
     }
     if(water_lvl > telegram_low_lvl_val.toInt() && telegram_dealarm_sent == false && telegram_active){
-      send_telegram(telegram_low_lvl_txt + " KONIEC ALARMU");
+      send_telegram(gardner_name + ": " + telegram_low_lvl_txt + " KONIEC ALARMU");
       telegram_dealarm_sent = true;
       telegram_alarm_sent = false;
     }
