@@ -68,7 +68,7 @@ unsigned long feed_interval = 300000;
 unsigned long bo1_start_time;
 unsigned long last_moisture_send;                               // moisture sending timer
 unsigned long impulse_ml = 250;                                 // one impulse amount 
-unsigned long impulse_time = 38;                                // impulse time
+unsigned long impulse_time = 67;                                // impulse time
 
 // type_sensor enum: 1-temperature, 2- moisture, 3-switch
 void send_domoticz(int type_sensor, float value_sensor, int idx){
