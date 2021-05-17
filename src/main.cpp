@@ -25,6 +25,7 @@
 OneWire oneWire(ai2);
 DallasTemperature sensors(&oneWire);
 
+String www_pass = "root";
 String gardner_name = "Eddy Gardner";
 String wifi_config_file = "/wifi_conf.txt";
 String config_file = "/config.txt";
@@ -145,9 +146,12 @@ void read_global(){
     while (file.position()<file.size()){
       s = file.readStringUntil('\n');
       s.trim();
-      if(line == 0){  //bot api
+      if(line == 0){  // nazwa obiektu
         gardner_name = s.c_str();
       }  
+      if(line == 1){  // hasło do www
+        www_pass = s.c_str();
+      }       
       line++;
     }
   file.close();    
@@ -216,13 +220,16 @@ void read_telegram_spiffs(){
 }
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(115200);   
   pinMode(ai1,INPUT);
   pinMode(bo1,OUTPUT);
   digitalWrite(bo1,HIGH);
   pinMode(bi1,INPUT_PULLUP);
   pinMode(bi3,INPUT_PULLUP);
 
+  delay(1000);
+  Serial.println("\n\n");
+  Serial.println("read config..."); 
   // read domoticz settings from spiffs
   read_telegram_spiffs();
   read_wifi_spiffs();
@@ -253,13 +260,11 @@ void setup() {
     idx_water_pump = EEPROM.read(15);    
   }
   domoticz_interval = (send_interval * 60 * 1000);
+  Serial.println("booting...");
 
   sensors.requestTemperatures();
   temperature = sensors.getTempCByIndex(0);
-
-  Serial.println("booting...");
   connect_to_wifi();
-
   restServerRouting();
   server.onNotFound(handleNotFound);
   server.begin();
@@ -276,7 +281,9 @@ void setup() {
 
   int moisture_raw = analogRead(ai1);
   moisture = map(moisture_raw,308,760,100,0);
-
+  Serial.println("booting done, enjoy\n"); 
+  Serial.println("www username is: root");
+  Serial.println("www password is: " + String(www_pass) + "\n");  
 }
 
 void loop(){

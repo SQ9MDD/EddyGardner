@@ -36,7 +36,7 @@ const char HTTP_DOMO[] PROGMEM = R"=====(
                     }                   
                 }
                 };
-                xhttp.open("GET", "/json.htm", true);
+                xhttp.open("GET", "/json.htm?page=domoti_set", true);
                 xhttp.send();
             }
 
@@ -60,7 +60,7 @@ const char HTTP_DOMO[] PROGMEM = R"=====(
                 xhttp.send();
             }
             refresh_data();
-            setInterval(refresh_data, 3000);        
+            //setInterval(refresh_data, 3000);        
         </script>
     </head>
     <body>
@@ -106,7 +106,7 @@ const char HTTP_DOMO[] PROGMEM = R"=====(
                             </a>
                         </td>                                                                                                                        
                         <td>&nbsp;</td>
-                        <td width=300><h2> <b id="gardner_name">wait...</b><b></b></h2></td
+                        <td width=300><h2> <b id="title">wait...</b><b></b></h2></td
                     </tr>
                 </table>
             </div>

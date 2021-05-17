@@ -36,7 +36,7 @@ const char HTTP_SETTINGS[] PROGMEM = R"=====(
                     }                   
                 }
                 };
-                xhttp.open("GET", "/json.htm", true);
+                xhttp.open("GET", "/json.htm?page=global_set", true);
                 xhttp.send();
             }
 
@@ -60,7 +60,7 @@ const char HTTP_SETTINGS[] PROGMEM = R"=====(
                 xhttp.send();
             }
             refresh_data();
-            setInterval(refresh_data, 3000);        
+            //setInterval(refresh_data, 3000);        
         </script>
     </head>
     <body>
@@ -120,7 +120,8 @@ const char HTTP_SETTINGS[] PROGMEM = R"=====(
                         <input class="input" name="gardner_name" id="gardner_name" type="text" title="port" placeholder="Edward Ogrodnik">
                     </div> 
                     <div>
-                        &nbsp;
+                        <label for="www_pass">hasło www</label>
+                        <input class="input" name="www_pass" id="www_pass" type="password" title="Hasło do panela WWW" placeholder="***** ***">
                     </div>   
                     <div>
                         &nbsp;

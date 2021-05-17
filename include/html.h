@@ -31,6 +31,7 @@ const char HTTP_HTML[] PROGMEM = R"=====(
                                 element.checked = value;
                             } else {
                                 element.value = value;
+                                element.innerHTML = value;
                             }
                         }
                     }                   
@@ -56,7 +57,7 @@ const char HTTP_HTML[] PROGMEM = R"=====(
                     }                   
                 }
                 };
-                xhttp.open("GET", "/json.htm", true);
+                xhttp.open("GET", "/json.htm?page=home", true);
                 xhttp.send();
             }
             refresh_data();
@@ -106,7 +107,7 @@ const char HTTP_HTML[] PROGMEM = R"=====(
                             </a>
                         </td>                                                                                                                        
                         <td>&nbsp;</td>
-                        <td width=300><h2> <b id="gardner_name">wait...</b><b></b></h2></td>
+                        <td width=300><h2> <b id="title">wait...</b><b></b></h2></td>
                     </tr>
                 </table>
             </div>

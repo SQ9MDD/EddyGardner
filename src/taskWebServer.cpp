@@ -6,6 +6,8 @@
 #include "taskWebServer.h"
 
 ESP8266WebServer server(80);
+
+extern String www_pass;
 extern String gardner_name;
 extern String config_file;
 extern String wifi_config_file;
@@ -43,108 +45,157 @@ extern int idx_water_tank;
 extern int idx_water_pump;
 
 void getJSON(){
-  long water_percent = map(water_lvl, 0, water_lvl_max, 0, 100);
-  water_percent = constrain(water_percent,0,100);
-  String job_status;
-  if(low_lvl == false){
-    if(moisture <= moisture_low_limit){
-      job_status = "\"<font color=red> Błąd umieszczenia czujnika wilgotności, praca niemożliwa. </font>\"";
-    }else if(moisture > moisture_low_limit && moisture < moisture_set){
-      job_status = "\"<font color=green> Normalna praca, niska wilgotność, tryb podlewania.</font>\"";
-    }else if(moisture >= moisture_set && moisture < moisture_hi_limit){
-      job_status = "\"<font color=green> Normalna praca, wilgotność w normie, oczekiwanie.</font>\"";
-    }else if(moisture >= moisture_set && moisture >= moisture_hi_limit){
-      job_status = "\"<font color=blue> Normalna praca, wilgotność powyżej normy, oczekiwanie.</font>\"";
+  if(server.arg("page") == "home"){
+    long water_percent = map(water_lvl, 0, water_lvl_max, 0, 100);
+    water_percent = constrain(water_percent,0,100);
+    String job_status;
+    if(low_lvl == false){
+      if(moisture <= moisture_low_limit){
+        job_status = "\"<font color=red> Błąd umieszczenia czujnika wilgotności, praca niemożliwa. </font>\"";
+      }else if(moisture > moisture_low_limit && moisture < moisture_set){
+        job_status = "\"<font color=green> Normalna praca, niska wilgotność, tryb podlewania.</font>\"";
+      }else if(moisture >= moisture_set && moisture < moisture_hi_limit){
+        job_status = "\"<font color=green> Normalna praca, wilgotność w normie, oczekiwanie.</font>\"";
+      }else if(moisture >= moisture_set && moisture >= moisture_hi_limit){
+        job_status = "\"<font color=blue> Normalna praca, wilgotność powyżej normy, oczekiwanie.</font>\"";
+      }else{
+        job_status = "\"<font color=orange> Analizuję sytuację...</font>\"";
+      }
     }else{
-      job_status = "\"<font color=orange> Analizuję sytuację...</font>\"";
+      job_status = "\"<font color=red> Brak wody w zbiorniku, praca niemożliwa. </font>\"";
     }
-  }else{
-    job_status = "\"<font color=red> Brak wody w zbiorniku, praca niemożliwa. </font>\"";
+    String message = "{\"time\": ";
+    message += millis();
+    message += ", \"moisture\": ";
+    message += moisture;
+    message += ", \"temp\": ";
+    message +=  String(temperature,1);  
+    message += ", \"tank\": ";
+    message += water_percent;  
+    message += ", \"job_status\": ";
+    message += job_status;
+    message += ", \"pump\": ";
+    if(bo_state){
+      message += "\"PRACA\""; 
+    }else{
+      message += "\"STOP\""; 
+    }
+    message += "}";
+    server.send(200, F("application/json"), message);    
   }
-  
-  String message = "{\"time\": ";
-  message += millis();
-  message += ", \"moisture\": ";
-  message += moisture;
-  message += ", \"temp\": ";
-  message +=  String(temperature,1);  
-  message += ", \"tank\": ";
-  message += water_percent;  
-  message += ", \"moisture_set\": ";
-  message += moisture_set;   
-  message += ", \"tank_amount\": ";
-  message += (water_lvl_max / 1000);  
-  message += ", \"impulse_ml\": ";
-  message += impulse_ml; 
-  message += ", \"feed_interval\": ";
-  message += (feed_interval / 1000 / 60); 
-  message += ", \"job_status\": ";
-  message += job_status;
-  message += ", \"pump\": ";
-  if(bo_state){
-    message += "\"PRACA\""; 
-  }else{
-    message += "\"STOP\""; 
+  else if(server.arg("page") == "water_set"){
+    if(!server.authenticate("root", www_pass.c_str())) return server.requestAuthentication(DIGEST_AUTH, "login required for user root", "Authentication Failed");
+    String message = "{\"time\": ";
+    message += millis();
+    message += ", \"moisture_set\": ";
+    message += moisture_set;   
+    message += ", \"tank_amount\": ";
+    message += (water_lvl_max / 1000);  
+    message += ", \"impulse_ml\": ";
+    message += impulse_ml; 
+    message += ", \"feed_interval\": ";
+    message += (feed_interval / 1000 / 60); 
+    message += "}";
+    server.send(200, F("application/json"), message);    
   }
-  message += ", \"domoti_IP_1\": ";
-  message += domoti_IP_1;
-  message += ", \"domoti_IP_2\": ";
-  message += domoti_IP_2;  
-  message += ", \"domoti_IP_3\": ";
-  message += domoti_IP_3;  
-  message += ", \"domoti_IP_4\": ";
-  message += domoti_IP_4;  
-  message += ", \"domoti_PORT\": ";
-  message += domoti_PORT;    
-  message += ", \"send_interval\": ";
-  message += send_interval; 
-  message += ", \"domoti_on\": ";
-  message += domoti_on;      
-  message += ", \"idx_moisture_sensor\": ";
-  message += idx_moisture_sensor;   
-  message += ", \"idx_temp_sensor\": ";
-  message += idx_temp_sensor;   
-  message += ", \"idx_water_tank\": ";
-  message += idx_water_tank;   
-  message += ", \"idx_water_pump\": ";
-  message += idx_water_pump;   
-  message += ", \"telegram_bot_api_key\": ";
-  message += "\"" + telegram_bot_api_key + "\"";  
-  message += ", \"telegram_chat_id\": ";
-  message += "\"" + telegram_chat_id + "\"";  
-  message += ", \"telegram_low_lvl_txt\": ";
-  message += "\"" + telegram_low_lvl_txt + "\""; 
-  message += ", \"telegram_low_lvl_val\": ";
-  message += "\"" + telegram_low_lvl_val + "\"";
-  message += ", \"telegram_active\": ";
-  message += telegram_active;  
-  message += ", \"wifi_ssid\": ";
-  message += "\"" + wifi_ssid + "\""; 
-  message += ", \"gardner_name\": ";
-  message += "\"" + gardner_name + "\"";  
-  message += ", \"title\": ";
-  message += "\"" + gardner_name + "\"";  
-  message += ", \"version\": ";
-  message += "\"" + String(VERSION_SHORT) + "<br> build: " + String(BUILD_NUMBER) + "\"";               
-  message += "}";
-  server.send(200, F("application/json"), message);
+  else if(server.arg("page") == "domoti_set"){
+    if(!server.authenticate("root", www_pass.c_str())) return server.requestAuthentication(DIGEST_AUTH, "login required for user root", "Authentication Failed");
+    String message = "{\"time\": ";
+    message += millis();
+    message += ", \"domoti_IP_1\": ";
+    message += domoti_IP_1;
+    message += ", \"domoti_IP_2\": ";
+    message += domoti_IP_2;  
+    message += ", \"domoti_IP_3\": ";
+    message += domoti_IP_3;  
+    message += ", \"domoti_IP_4\": ";
+    message += domoti_IP_4;  
+    message += ", \"domoti_PORT\": ";
+    message += domoti_PORT;    
+    message += ", \"send_interval\": ";
+    message += send_interval; 
+    message += ", \"domoti_on\": ";
+    message += domoti_on;      
+    message += ", \"idx_moisture_sensor\": ";
+    message += idx_moisture_sensor;   
+    message += ", \"idx_temp_sensor\": ";
+    message += idx_temp_sensor;   
+    message += ", \"idx_water_tank\": ";
+    message += idx_water_tank;   
+    message += ", \"idx_water_pump\": ";
+    message += idx_water_pump;     
+    message += "}";
+    server.send(200, F("application/json"), message);    
+  }  
+  else if(server.arg("page") == "telegram_set"){
+    if(!server.authenticate("root", www_pass.c_str())) return server.requestAuthentication(DIGEST_AUTH, "login required for user root", "Authentication Failed");
+    String message = "{\"time\": ";
+    message += millis();
+    message += ", \"telegram_bot_api_key\": ";
+    message += "\"" + telegram_bot_api_key + "\"";  
+    message += ", \"telegram_chat_id\": ";
+    message += "\"" + telegram_chat_id + "\"";  
+    message += ", \"telegram_low_lvl_txt\": ";
+    message += "\"" + telegram_low_lvl_txt + "\""; 
+    message += ", \"telegram_low_lvl_val\": ";
+    message += "\"" + telegram_low_lvl_val + "\"";
+    message += ", \"telegram_active\": ";
+    message += telegram_active;     
+    message += "}";
+    server.send(200, F("application/json"), message);    
+  } 
+  else if(server.arg("page") == "wifi_set"){
+    if(!server.authenticate("root", www_pass.c_str())) return server.requestAuthentication(DIGEST_AUTH, "login required for user root", "Authentication Failed");
+    String message = "{\"time\": ";
+    message += millis();
+    message += ", \"wifi_ssid\": ";
+    message += "\"" + wifi_ssid + "\""; 
+    message += ", \"wifi_pass\": ";
+    message += "\"" + wifi_pass + "\"";         
+    message += "}";
+    server.send(200, F("application/json"), message);    
+  }
+  else if(server.arg("page") == "global_set"){
+    if(!server.authenticate("root", www_pass.c_str())) return server.requestAuthentication(DIGEST_AUTH, "login required for user root", "Authentication Failed");
+    String message = "{\"time\": ";
+    message += millis();
+    message += ", \"gardner_name\": ";
+    message += "\"" + gardner_name + "\"";   
+    message += ", \"www_pass\": ";
+    message += "\"" + www_pass + "\"";       
+    message += "}";
+    server.send(200, F("application/json"), message);    
+  }
+  else{
+    String message = "{\"time\": ";
+    message += millis();
+    message += ", \"title\": ";
+    message += "\"" + gardner_name + "\"";  
+    message += ", \"version\": ";
+    message += "\"" + String(VERSION_SHORT) + "<br> build: " + String(BUILD_NUMBER) + "\"";         
+    message += "}";
+    server.send(200, F("application/json"), message);     
+  }
 }
 
 void save_settings(){
+  if(!server.authenticate("root", www_pass.c_str())) return server.requestAuthentication(DIGEST_AUTH, "login required for user root", "Authentication Failed");
   gardner_name = server.arg("gardner_name");
+  www_pass = server.arg("www_pass");
   if (LittleFS.begin()){
       spiffsActive = true;
   } else {
       Serial.println("Unable to activate SPIFFS");
   }  
   File file = LittleFS.open(config_file,"w");  
-  file.print(gardner_name + "\n");
+  file.print(gardner_name + "\n" + www_pass + "\n");
   file.close();  
   delay(2000);
   server.send(200, F("text/html"), "<html><head><meta http-equiv=\"refresh\" content=\"1; url=/settings\"></head><body><center><br><br><br><b>OK</body></html>");
 }
 
 void save_wifi(){
+  if(!server.authenticate("root", www_pass.c_str())) return server.requestAuthentication(DIGEST_AUTH, "login required for user root", "Authentication Failed");
   wifi_ssid = server.arg("wifi_ssid");
   wifi_pass = server.arg("wifi_pass");
   if (LittleFS.begin()){
@@ -165,6 +216,7 @@ void save_wifi(){
 }
 
 void save_telegram_spiffs(){
+  if(!server.authenticate("root", www_pass.c_str())) return server.requestAuthentication(DIGEST_AUTH, "login required for user root", "Authentication Failed");
   telegram_bot_api_key = server.arg("telegram_bot_api_key");
   telegram_chat_id = server.arg("telegram_chat_id");
   telegram_low_lvl_txt = server.arg("telegram_low_lvl_txt");
@@ -184,6 +236,7 @@ void save_telegram_spiffs(){
 }
 
 void save_cfg(){
+  if(!server.authenticate("root", www_pass.c_str())) return server.requestAuthentication(DIGEST_AUTH, "login required for user root", "Authentication Failed");
   String moisture_set_str = server.arg("moisture_set");   moisture_set = moisture_set_str.toInt();
   String water_lvl_max_str = server.arg("tank_amount");   water_lvl_max = (water_lvl_max_str.toInt() * 1000);
   String impulse_ml_str = server.arg("impulse_ml");       impulse_ml = impulse_ml_str.toInt();
@@ -203,6 +256,7 @@ void save_cfg(){
 }
 
 void save_domoticz(){
+  if(!server.authenticate("root", www_pass.c_str())) return server.requestAuthentication(DIGEST_AUTH, "login required for user root", "Authentication Failed");
   domoti_IP_1 = server.arg("domoti_IP_1").toInt();
   domoti_IP_2 = server.arg("domoti_IP_2").toInt();
   domoti_IP_3 = server.arg("domoti_IP_3").toInt();
@@ -240,26 +294,31 @@ void handle_Index(){
 
 // water settings
 void handle_set_water(){
+  if(!server.authenticate("root", www_pass.c_str())) return server.requestAuthentication(DIGEST_AUTH, "login required for user root", "Authentication Failed");
   server.send(200, "text/html", HTTP_WATER);
 }
 
 // domoticz settings
 void handle_set_domo(){
+  if(!server.authenticate("root", www_pass.c_str())) return server.requestAuthentication(DIGEST_AUTH, "login required for user root", "Authentication Failed");
   server.send(200, "text/html", HTTP_DOMO);
 }
 
 // telegram settings
 void handle_set_telegram(){
+  if(!server.authenticate("root", www_pass.c_str())) return server.requestAuthentication(DIGEST_AUTH, "login required for user root", "Authentication Failed");
   server.send(200, "text/html", HTTP_TELEGRAM);
 }
 
 // WiFi settings
 void handle_set_wifi(){
+  if(!server.authenticate("root", www_pass.c_str())) return server.requestAuthentication(DIGEST_AUTH, "login required for user root", "Authentication Failed");
   server.send(200, "text/html", HTTP_WIFI);
 }
 
 // global settings
 void handle_settings(){
+  if(!server.authenticate("root", www_pass.c_str())) return server.requestAuthentication(DIGEST_AUTH, "login required for user root", "Authentication Failed");
   server.send(200, "text/html", HTTP_SETTINGS);
 }
 
