@@ -59,7 +59,7 @@ void getJSON(){
       }else if(moisture >= moisture_set && moisture >= moisture_hi_limit){
         job_status = "\"<font color=blue> Normalna praca, wilgotność powyżej normy, oczekiwanie.</font>\"";
       }else{
-        job_status = "\"<font color=orange> Analizuję sytuację...</font>\"";
+        job_status = "\"<font color=orange> Analizuję sytuację, dane są niejednoznaczne...</font>\"";
       }
     }else{
       job_status = "\"<font color=red> Brak wody w zbiorniku, praca niemożliwa. </font>\"";

@@ -226,7 +226,6 @@ void setup() {
   digitalWrite(bo1,HIGH);
   pinMode(bi1,INPUT_PULLUP);
   pinMode(bi3,INPUT_PULLUP);
-
   delay(1000);
   Serial.println("\n\n");
   Serial.println("read config..."); 
@@ -235,7 +234,6 @@ void setup() {
   read_wifi_spiffs();
   read_global();
   delay(2000);
-
   // read settings from eeprom
   EEPROM.begin(1024);
   delay(10);
@@ -261,7 +259,6 @@ void setup() {
   }
   domoticz_interval = (send_interval * 60 * 1000);
   Serial.println("booting...");
-
   sensors.requestTemperatures();
   temperature = sensors.getTempCByIndex(0);
   connect_to_wifi();
@@ -278,7 +275,6 @@ void setup() {
 		}
 	});
   ArduinoOTA.begin();
-
   int moisture_raw = analogRead(ai1);
   moisture = map(moisture_raw,308,760,100,0);
   Serial.println("booting done, enjoy\n"); 
@@ -320,7 +316,6 @@ void loop(){
 
   // testowanie wilgotnosci raz na 5 sec
   if(millis() - last_tick > 5000){
-
     int moisture_raw = analogRead(ai1);
     moisture = (((moisture * 9) + map(moisture_raw,308,760,100,0)) / 10); // wygładzanie odczytów
     moisture = constrain(moisture,0,100);
@@ -329,8 +324,6 @@ void loop(){
     if(tmp_mesure > -15.0){ // podczas pracy pompy pojawiają się anomalie odczytów wiec pomijam błędne pomiary
       temperature = (((temperature * 9 ) + tmp_mesure) / 10); // wygładzanie odczytów
     }
-    last_tick = millis();
-
     if(water_lvl < telegram_low_lvl_val.toInt() && telegram_alarm_sent == false && telegram_active){
       send_telegram(gardner_name + ": " + telegram_low_lvl_txt + " ALARM"); // <-------------- dodac nazwe systemu w alarmie
       telegram_alarm_sent = true;
@@ -355,15 +348,14 @@ void loop(){
     // debug
     int water_percent = map(water_lvl,0,water_lvl_max,0,100);
     Serial.println(String(millis()) + ";" + String(water_lvl) + ";" + String(water_lvl_max) + ";" + String(water_percent));
+    last_tick = millis();
   }
 
   // domoticz integration
   domoticz_interval = u_long(send_interval * 60 * 1000);
   if((millis() - last_data_send > domoticz_interval) && domoti_on){
-
     int water_percent = map(water_lvl,0,water_lvl_max,0,100);
     water_percent = constrain(water_percent,0,100);
-
     send_domoticz(1, temperature, idx_temp_sensor);
     send_domoticz(2, moisture, idx_moisture_sensor);
     send_domoticz(1, water_percent, idx_water_tank);
@@ -375,7 +367,7 @@ void loop(){
     last_data_send = millis();
   }
 
-  // raz na 5 minut podlewanie automatyczne
+  // raz na x minut podlewanie automatyczne
   if(bo_state == false && (millis() - last_moisture_send) > feed_interval){
     if(moisture < moisture_set){
       BO_SET();
