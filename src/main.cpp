@@ -108,7 +108,7 @@ void send_telegram(String txt_msg){
 }
 
 void BO_SET(){
-  if(low_lvl == false && moisture > moisture_low_limit && moisture < moisture_set){
+  if(low_lvl == false && bo_state == false && moisture > moisture_low_limit && moisture < moisture_set){
     bo_state = true; 
     bo1_start_time = millis(); 
     delay(100);
@@ -367,11 +367,9 @@ void loop(){
     last_data_send = millis();
   }
 
-  // raz na x minut podlewanie automatyczne
+  // raz na x minut wyzwalaj podlewanie automatyczne, BO_SET() sprawdza warunki samodzielnie
   if(bo_state == false && (millis() - last_moisture_send) > feed_interval){
-    if(moisture < moisture_set){
-      BO_SET();
-    }
-    last_moisture_send = millis(); 
+    last_moisture_send = millis();
+    BO_SET();
   }
 }

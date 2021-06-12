@@ -53,9 +53,9 @@ void getJSON(){
       if(moisture <= moisture_low_limit){
         job_status = "\"<font color=red> Błąd umieszczenia czujnika wilgotności, praca niemożliwa. </font>\"";
       }else if(moisture > moisture_low_limit && moisture < moisture_set){
-        job_status = "\"<font color=green> Normalna praca, niska wilgotność, tryb podlewania.</font>\"";
+        job_status = "\"<font color=white> Normalna praca, niska wilgotność, tryb podlewania.</font>\"";
       }else if(moisture >= moisture_set && moisture < moisture_hi_limit){
-        job_status = "\"<font color=green> Normalna praca, wilgotność w normie, oczekiwanie.</font>\"";
+        job_status = "\"<font color=white> Normalna praca, wilgotność w normie, oczekiwanie.</font>\"";
       }else if(moisture >= moisture_set && moisture >= moisture_hi_limit){
         job_status = "\"<font color=blue> Normalna praca, wilgotność powyżej normy, oczekiwanie.</font>\"";
       }else{
