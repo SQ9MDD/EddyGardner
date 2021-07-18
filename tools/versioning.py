@@ -41,6 +41,7 @@ except:
 sub_version = int(build_no / 100)
 build_version = int((build_no % 100) / 10)
 version = version + str(sub_version) + "." + str(build_version)
+little_build = build_no % 10
 
 with open(FILENAME_BUILDNO, 'w+') as f:
     f.write(str(build_no) + "\n" + str(main_checksum_now) + "\n" + secondary_checksum_now + "\n")
@@ -56,6 +57,9 @@ hf = """
 #ifndef VERSION_SHORT
   #define VERSION_SHORT "{}"
 #endif
-""".format(build_no, version, build_date, version)
+#ifndef VERSION_DATE
+  #define VERSION_DATE "{}"
+#endif
+""".format(little_build, version, build_date, version, build_date)
 with open(FILENAME_VERSION_H, 'w+') as f:
     f.write(hf)

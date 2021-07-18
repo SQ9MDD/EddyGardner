@@ -172,7 +172,7 @@ void getJSON(){
     message += ", \"title\": ";
     message += "\"" + gardner_name + "\"";  
     message += ", \"version\": ";
-    message += "\"" + String(VERSION) + "\"";         
+    message += "\"" + String(VERSION_SHORT) + " (build: " + String(BUILD_NUMBER)+ ") " + String(VERSION_DATE) + "\"";         
     message += "}";
     server.send(200, F("application/json"), message);     
   }

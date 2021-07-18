@@ -113,7 +113,7 @@ void BO_SET(){
     bo1_start_time = millis(); 
     delay(100);
     digitalWrite(bo1, LOW);
-    if(water_lvl <= int(impulse_ml + 50)){ // stop counting down, avoid misscalculating 0 will be executed from low level float
+    if(water_lvl >= int(impulse_ml + 50)){ // stop counting down, avoid misscalculating 0 will be executed from low level float
       water_lvl = water_lvl - int(impulse_ml);
     }
     if(domoti_on){
@@ -215,6 +215,7 @@ void read_telegram_spiffs(){
       }  
       if(line == 4){
           telegram_active = s.toInt();
+          last_telegram_active = telegram_active; // to avoid sending msg after reboot
       }    
       line++;
     }
