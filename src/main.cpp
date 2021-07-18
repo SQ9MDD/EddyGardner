@@ -113,7 +113,9 @@ void BO_SET(){
     bo1_start_time = millis(); 
     delay(100);
     digitalWrite(bo1, LOW);
-    water_lvl = water_lvl - impulse_ml;
+    if(water_lvl <= int(impulse_ml + 50)){ // stop counting down, avoid misscalculating 0 will be executed from low level float
+      water_lvl = water_lvl - int(impulse_ml);
+    }
     if(domoti_on){
       send_domoticz(3, 1.0, idx_water_pump);
     }
