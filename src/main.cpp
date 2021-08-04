@@ -36,10 +36,19 @@ String telegram_bot_api_key;
 String telegram_chat_id;
 String telegram_low_lvl_txt;
 String telegram_low_lvl_val;
+
+String telegram_rh_low_lvl_txt;
+String telegram_rh_low_lvl_val;
+
 boolean last_telegram_active = false;
 boolean telegram_active = false;
+boolean telegram_rh_active = false;
 boolean telegram_alarm_sent = false;
 boolean telegram_dealarm_sent = true;
+
+boolean telegram_rh_alarm_sent = false;
+boolean telegram_rh_dealarm_sent = true;
+
 boolean spiffsActive = false;
 boolean bo_state = false;
 boolean low_lvl = false;
@@ -113,7 +122,7 @@ void BO_SET(){
     bo1_start_time = millis(); 
     delay(100);
     digitalWrite(bo1, LOW);
-    if(water_lvl >= int(impulse_ml + 50)){ // stop counting down, avoid misscalculating 0 will be executed from low level float
+    if(water_lvl >= int(impulse_ml + 50)){ // stop counting down, avoid misscalculating 0 will be executed from low level float i known this is dirty method.
       water_lvl = water_lvl - int(impulse_ml);
     }
     if(domoti_on){
@@ -210,13 +219,19 @@ void read_telegram_spiffs(){
       if(line == 2){  // tekst alarmu niskiego poziomu wody
         telegram_low_lvl_txt = s.c_str();
       }
-      if(line == 3){  // tekst alarmu niskiego poziomu wody
+      if(line == 3){  // poziom alarmu
         telegram_low_lvl_val = s.c_str();
       }  
       if(line == 4){
           telegram_active = s.toInt();
           last_telegram_active = telegram_active; // to avoid sending msg after reboot
-      }    
+      }   
+      if(line == 5){  // tekst alarmu niskiego poziomu wilgotności
+        telegram_rh_low_lvl_txt = s.c_str();
+      }  
+      if(line == 6){  // poziom wilgotności
+        telegram_rh_low_lvl_val = s.c_str();
+      }             
       line++;
     }
   file.close();
@@ -327,8 +342,9 @@ void loop(){
     if(tmp_mesure > -15.0){ // podczas pracy pompy pojawiają się anomalie odczytów wiec pomijam błędne pomiary
       temperature = (((temperature * 9 ) + tmp_mesure) / 10); // wygładzanie odczytów
     }
+    // water lvl alerts via telegram
     if(water_lvl < telegram_low_lvl_val.toInt() && telegram_alarm_sent == false && telegram_active){
-      send_telegram(gardner_name + ": " + telegram_low_lvl_txt + " ALARM"); // <-------------- dodac nazwe systemu w alarmie
+      send_telegram(gardner_name + ": " + telegram_low_lvl_txt + " ALARM");
       telegram_alarm_sent = true;
       telegram_dealarm_sent = false;
     }
@@ -337,6 +353,17 @@ void loop(){
       telegram_dealarm_sent = true;
       telegram_alarm_sent = false;
     }
+    // moisture alerts via telegram
+    if(moisture < telegram_rh_low_lvl_val.toInt() && telegram_rh_alarm_sent == false && telegram_rh_active){
+      send_telegram(gardner_name + ": " + telegram_rh_low_lvl_txt + " ALARM");
+      telegram_rh_alarm_sent = true;
+      telegram_rh_dealarm_sent = false;
+    }
+    if(moisture > telegram_rh_low_lvl_val.toInt() && telegram_rh_dealarm_sent == false && telegram_rh_active){
+      send_telegram(gardner_name + ": " + telegram_rh_low_lvl_txt + " KONIEC ALARMU");
+      telegram_rh_dealarm_sent = true;
+      telegram_rh_alarm_sent = false;
+    }    
 
     // wysłanie wiadomości po aktywacji i deaktywacji powiadomien.
     if(last_telegram_active != telegram_active){
@@ -350,7 +377,7 @@ void loop(){
     }
     // debug
     int water_percent = map(water_lvl,0,water_lvl_max,0,100);
-    Serial.println(String(millis()) + ";" + String(water_lvl) + ";" + String(water_lvl_max) + ";" + String(water_percent));
+    //Serial.println(String(millis()) + ";" + String(water_lvl) + ";" + String(water_lvl_max) + ";" + String(water_percent));
     last_tick = millis();
   }
 

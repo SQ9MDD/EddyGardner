@@ -18,7 +18,10 @@ extern String telegram_bot_api_key;
 extern String telegram_chat_id;
 extern String telegram_low_lvl_txt;
 extern String telegram_low_lvl_val;
+extern String telegram_rh_low_lvl_txt;
+extern String telegram_rh_low_lvl_val;
 extern boolean telegram_active;
+extern boolean telegram_rh_active;
 extern boolean spiffsActive;
 extern boolean low_lvl;
 extern unsigned long time_to_tick;
@@ -139,8 +142,14 @@ void getJSON(){
     message += "\"" + telegram_low_lvl_txt + "\""; 
     message += ", \"telegram_low_lvl_val\": ";
     message += "\"" + telegram_low_lvl_val + "\"";
+    message += ", \"telegram_rh_low_lvl_txt\": ";
+    message += "\"" + telegram_rh_low_lvl_txt + "\""; 
+    message += ", \"telegram_rh_low_lvl_val\": ";
+    message += "\"" + telegram_rh_low_lvl_val + "\"";    
     message += ", \"telegram_active\": ";
-    message += telegram_active;     
+    message += telegram_active; 
+    message += ", \"telegram_rh_active\": ";
+    message += telegram_rh_active;        
     message += "}";
     server.send(200, F("application/json"), message);    
   } 
@@ -221,7 +230,10 @@ void save_telegram_spiffs(){
   telegram_chat_id = server.arg("telegram_chat_id");
   telegram_low_lvl_txt = server.arg("telegram_low_lvl_txt");
   telegram_low_lvl_val = server.arg("telegram_low_lvl_val");
+  telegram_rh_low_lvl_txt = server.arg("telegram_rh_low_lvl_txt");
+  telegram_rh_low_lvl_val = server.arg("telegram_rh_low_lvl_val");
   telegram_active = server.arg("telegram_active").toInt();
+  telegram_rh_active = server.arg("telegram_rh_active").toInt();  
   Serial.print(telegram_active);
   if (LittleFS.begin()){
       spiffsActive = true;
@@ -229,7 +241,7 @@ void save_telegram_spiffs(){
       Serial.println("Unable to activate SPIFFS");
   }  
   File file = LittleFS.open(telegram_config_file,"w");
-  file.print(telegram_bot_api_key + "\n" + telegram_chat_id + "\n" + telegram_low_lvl_txt + "\n" + telegram_low_lvl_val  + "\n" + String(telegram_active) + "\n");
+  file.print(telegram_bot_api_key + "\n" + telegram_chat_id + "\n" + telegram_low_lvl_txt + "\n" + telegram_low_lvl_val  + "\n" + String(telegram_active) + "\n" + telegram_rh_low_lvl_txt + "\n" + telegram_rh_low_lvl_val  + "\n" + String(telegram_rh_active) + "\n");
   file.close();
   delay(2000);
   server.send(200, F("text/html"), "<html><head><meta http-equiv=\"refresh\" content=\"1; url=/set_telegram\"></head><body><center><br><br><br><b>OK</body></html>");

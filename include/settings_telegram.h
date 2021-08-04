@@ -151,6 +151,24 @@ const char HTTP_TELEGRAM[] PROGMEM = R"=====(
                     </div> 
                 </div>                                  
             </div> 
+            <div class="grid-container half">
+                <div class="grid-container full">
+                    <div>
+                        <label for="telegram_low_lvl_txt">Tekst alarmu niskiego poziomu wilgotności</label>
+                        <input class="input_long" name="telegram_rh_low_lvl_txt" id="telegram_rh_low_lvl_txt" type="text"  title="Klucz API bota telegram">
+                    </div>
+                </div>
+                <div class="grid-container half">
+                    <div>
+                        <label for="telegram_low_lvl_val">Alarm poniżej wartości</label>
+                        <input class="input" name="telegram_rh_low_lvl_val" id="telegram_rh_low_lvl_val" type="number" min="10" max="90" step="5" title="wyslij powiadomienie gdy wartość spadnie poniżej" placeholder="65">
+                    </div> 
+                    <div>
+                        <label for="telegram_rh_active">Włącz powiadomienie</label><br>
+                        <input class="box" name="telegram_rh_active" id="telegram_rh_active" type="checkbox" value="1" title="włącz integrację z domoticzem"> 
+                    </div> 
+                </div>                                  
+            </div>             
             <div>&nbsp;</div>
             <div>
                 <input class="submit_btn" type="submit" value="zapisz" title="...">
